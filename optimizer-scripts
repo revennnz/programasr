@@ -1,0 +1,334 @@
+<html>
+
+<head>
+    <base href="." />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizer Scripts</title>
+    <style>
+        :root {
+            --text-color: #2c3e50;
+            --bg-color: #f5f7fa;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --header-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+            --pre-bg: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #e4e8ed;
+                --bg-color: #1a1a1a;
+                --card-bg: rgba(40, 40, 40, 0.95);
+                --header-gradient: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
+                --pre-bg: #2c3e50;
+                --border-color: #444;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-color);
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header h1 {
+            font-size: clamp(1.5em, 5vw, 2.5em);
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(100px, 30%);
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+
+        .file-container {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .file-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--header-gradient);
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .file-header h3 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: clamp(1em, 3vw, 1.2em);
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2c3e50);
+            transform: scale(1.05);
+        }
+
+        pre {
+            background: var(--pre-bg);
+            padding: 20px;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: var(--text-color);
+            border-top: 1px solid var(--border-color);
+            transition: max-height 0.3s ease-out;
+        }
+
+        .show-more {
+            width: 100%;
+            padding: 10px;
+            background: var(--pre-bg);
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .show-more:hover {
+            background: var(--header-gradient);
+            color: #2980b9;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-container {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @media screen and (max-width: 600px) {
+            .file-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Windows Optimizer Scripts</h1>
+    </div>
+
+    <div id="fileList"></div>
+
+    <script>
+        const files = [{
+                name: "W10_Debloater_Script.ps1",
+                description: "Elimina el bloatware innecesario de Windows 10 y mejora el rendimiento del sistema",
+                content: "iwr -useb https://git.io/debloat|iex"
+            },
+            {
+                name: "Chris_Titus_Tweaks_Script.ps1",
+                description: "Script completo de optimización y ajuste de Windows por Chris Titus",
+                content: "iwr -useb https://christitus.com/win | iex"
+            },
+            {
+                name: "W10_Cleaner_Temp.bat",
+                description: "Script avanzado de limpieza de archivos temporales con manejo de privilegios de administrador",
+                content: `@echo off
+setlocal enabledelayedexpansion
+
+:: Solicitar privilegios de administrador
+IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
+    >nul 2>&1 "%SYSTEMROOT%\\SysWOW64\\cacls.exe" "%SYSTEMROOT%\\SysWOW64\\config\\system"
+) ELSE (
+    >nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
+)
+
+if '%errorlevel%' NEQ '0' (
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
+    set params= %*
+    echo UAC.ShellExecute "cmd.exe", "/c \\"%~s0\\" %params:"="%, "", "runas", 1 >> "%temp%\\getadmin.vbs"
+
+    "%temp%\\getadmin.vbs"
+    del "%temp%\\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    pushd "%CD%"
+    CD /D "%~dp0"
+
+title Limpieza Temporal
+cls
+
+:: Limpiar directorio temporal del usuario
+echo Limpiando archivos temporales de %TEMP%...
+if exist "%TEMP%" (
+    for /d %%p in ("%TEMP%\\*") do rd /s /q "%%p" 2>nul
+    for %%f in ("%TEMP%\\*.*") do del /q /f "%%f" 2>nul
+)
+
+:: Limpiar directorio temporal del sistema
+echo Limpiando archivos temporales del sistema...
+if exist "C:\\Windows\\Temp" (
+    for /d %%p in ("C:\\Windows\\Temp\\*") do rd /s /q "%%p" 2>nul
+    for %%f in ("C:\\Windows\\Temp\\*.*") do del /q /f "%%f" 2>nul
+)
+
+:: Limpiar archivos prefetch
+echo Limpiando archivos Prefetch...
+if exist "C:\\Windows\\Prefetch" (
+    for %%f in ("C:\\Windows\\Prefetch\\*.*") do del /q /f "%%f" 2>nul
+)
+
+echo Limpieza completada.
+pause`
+            }
+        ];
+
+        const fileList = document.getElementById('fileList');
+
+        files.forEach((file, index) => {
+            const fileContainer = document.createElement('div');
+            fileContainer.className = 'file-container';
+            fileContainer.style.animationDelay = `${index * 0.1}s`;
+
+            const fileHeader = document.createElement('div');
+            fileHeader.className = 'file-header';
+
+            const fileInfo = document.createElement('div');
+            const fileName = document.createElement('h3');
+            fileName.textContent = file.name;
+            const fileDesc = document.createElement('small');
+            fileDesc.textContent = file.description;
+            fileDesc.style.display = 'block';
+            fileDesc.style.color = 'inherit';
+            fileDesc.style.opacity = '0.7';
+            fileDesc.style.marginTop = '5px';
+
+            fileInfo.appendChild(fileName);
+            fileInfo.appendChild(fileDesc);
+
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'download-btn';
+            downloadButton.innerHTML = '<i class="fas fa-download"></i> Descargar';
+            downloadButton.onclick = () => {
+                const blob = new Blob([file.content], {
+                    type: 'text/plain'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = file.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            };
+
+            fileHeader.appendChild(fileInfo);
+            fileHeader.appendChild(downloadButton);
+
+            const fileContent = document.createElement('pre');
+            fileContent.textContent = file.content;
+
+            if (file.content.length > 300) {
+                fileContent.style.maxHeight = '150px';
+
+                const showMoreButton = document.createElement('button');
+                showMoreButton.className = 'show-more';
+                showMoreButton.textContent = 'Mostrar Más';
+
+                showMoreButton.onclick = () => {
+                    if (fileContent.style.maxHeight) {
+                        fileContent.style.maxHeight = '';
+                        showMoreButton.textContent = 'Mostrar Menos';
+                    } else {
+                        fileContent.style.maxHeight = '150px';
+                        showMoreButton.textContent = 'Mostrar Más';
+                    }
+                };
+
+                fileContainer.appendChild(fileHeader);
+                fileContainer.appendChild(fileContent);
+                fileContainer.appendChild(showMoreButton);
+            } else {
+                fileContainer.appendChild(fileHeader);
+                fileContainer.appendChild(fileContent);
+            }
+
+            fileList.appendChild(fileContainer);
+        });
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</body>
+
+</html>
